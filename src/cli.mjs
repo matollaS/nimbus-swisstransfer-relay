@@ -30,6 +30,8 @@ try {
     refreshToken: process.env.DRIVE_REFRESH_TOKEN,
     clientId: process.env.DRIVE_CLIENT_ID,
     clientSecret: process.env.DRIVE_CLIENT_SECRET,
+    serviceAccountKey: process.env.DRIVE_SERVICE_ACCOUNT_KEY,
+    serviceAccountKeyPath: process.env.GOOGLE_APPLICATION_CREDENTIALS || process.env.DRIVE_SERVICE_ACCOUNT_KEY_PATH,
   });
 
   const results = await transferSwissTransferToDrive({
