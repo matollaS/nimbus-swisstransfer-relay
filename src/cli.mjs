@@ -1,19 +1,37 @@
 #!/usr/bin/env node
+import fs from 'fs';
+import path from 'path';
 import { transferSwissTransferToDrive } from './worker.mjs';
+import { resolveAccessToken } from './gdrive-auth.mjs';
+
+// Simple .env parser if .env exists
+const envPath = path.resolve(process.cwd(), '.env');
+if (fs.existsSync(envPath)) {
+  const content = fs.readFileSync(envPath, 'utf8');
+  for (const line of content.split('\n')) {
+    const match = line.trim().match(/^([^=]+)=(.*)$/);
+    if (match && !process.env[match[1].trim()]) {
+      process.env[match[1].trim()] = match[2].trim().replace(/^["']|["']$/g, '');
+    }
+  }
+}
 
 const [, , shareUrl, password] = process.argv;
-const accessToken = process.env.DRIVE_ACCESS_TOKEN;
 
 if (!shareUrl) {
   console.error('Usage: DRIVE_ACCESS_TOKEN=... node src/cli.mjs <swisstransfer-link> [password]');
-  process.exit(1);
-}
-if (!accessToken) {
-  console.error('Set DRIVE_ACCESS_TOKEN — this must be a short-lived OAuth token with drive.file scope, obtained separately via a normal OAuth consent flow.');
+  console.error('Or set DRIVE_REFRESH_TOKEN, DRIVE_CLIENT_ID, DRIVE_CLIENT_SECRET in .env or environment.');
   process.exit(1);
 }
 
 try {
+  const accessToken = await resolveAccessToken({
+    accessToken: process.env.DRIVE_ACCESS_TOKEN,
+    refreshToken: process.env.DRIVE_REFRESH_TOKEN,
+    clientId: process.env.DRIVE_CLIENT_ID,
+    clientSecret: process.env.DRIVE_CLIENT_SECRET,
+  });
+
   const results = await transferSwissTransferToDrive({
     shareUrl,
     password: password ?? null,
@@ -23,6 +41,7 @@ try {
       process.stdout.write(`\r${fileName}: ${pct}%   `);
     },
   });
+
   console.log('\nDone:');
   for (const r of results) console.log(`  ${r.fileName} -> ${r.driveLink}`);
 } catch (err) {

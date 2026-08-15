@@ -24,13 +24,20 @@ old free-tier size limits (SwissTransfer allows up to 50GB free).
 
 ```bash
 npm install
-DRIVE_ACCESS_TOKEN=ya29.xxx node src/cli.mjs "https://www.swisstransfer.com/d/<id>" [password]
+DRIVE_ACCESS_TOKEN=ya29.xxx node src/cli.mjs "https://www.swisstransfer.com/dl/<id>" [password]
 ```
 
-`DRIVE_ACCESS_TOKEN` must come from a normal Google OAuth consent flow with
-at least the `drive.file` scope — that flow isn't included here, since it's
-identical to standard Drive OAuth integration and doesn't need to be
-SwissTransfer-specific.
+### Authentication Methods:
+
+1. **Direct Access Token**: Pass `DRIVE_ACCESS_TOKEN=ya29.xxx` (Google OAuth access token with `drive.file` scope).
+2. **Persistent Auto-Refresh via `.env`**: Create a `.env` file with:
+   ```env
+   DRIVE_CLIENT_ID=your_google_client_id
+   DRIVE_CLIENT_SECRET=your_google_client_secret
+   DRIVE_REFRESH_TOKEN=your_google_refresh_token
+   ```
+   The CLI will automatically refresh and fetch a valid access token on execution.
+
 
 ## What's not handled yet
 
