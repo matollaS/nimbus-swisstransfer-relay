@@ -1,0 +1,14 @@
+{
+  "name": "nimbus-swisstransfer-relay",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Streams SwissTransfer files directly into Google Drive without touching local disk. No official SwissTransfer API — best-effort reverse-engineered integration.",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "src/worker.mjs",
+  "scripts": {
+    "start": "node src/cli.mjs"
+  },
+  "license": "UNLICENSED"
+}
